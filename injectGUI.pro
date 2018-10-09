@@ -26,18 +26,18 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    thread.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    thread.h
 
 FORMS += \
         mainwindow.ui
 
 INCLUDEPATH += /usr/local/include/pcapplusplus
 LIBS+= -lPcap++ -lPacket++ -lCommon++
-
-# libs
 LIBS += -lpcap -lpthread
 
 # Default rules for deployment.
