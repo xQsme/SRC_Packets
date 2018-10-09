@@ -104,7 +104,7 @@ void MainWindow::on_pushButton_clicked()
     }*/
     if(!dev->open())
     {
-        //MessageBox
+        //MessageBox*
     }else{
         PacketStats stats;
         dev->startCapture(onPacketArrives, &stats);
