@@ -28,7 +28,7 @@ void MainWindow::on_pushButton_clicked()
     }
 
     // find the interface by IP address
-    pcpp::PcapLiveDevice* dev = pcpp::PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(interfaceIPAddr.c_str());
+    dev = pcpp::PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(interfaceIPAddr.c_str());
     if (dev == NULL)
     {
         ui->textBrowser_2->append("Cannot find interface with IPv4 address of '" + QString(interfaceIPAddr.c_str()) + "'");
@@ -123,19 +123,29 @@ void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
     int i = ui->listWidget->currentRow();
     switch(ui->comboBox->currentIndex()){
     case 0://TCP
-        ui->textEdit->setText(QString::fromStdString(stats.tcp[i].toString()));
+        ui->textBrowser->setText(QString::fromStdString(stats.tcp[i].toString()));
+        type="TCP";
+        index=i;
     break;
     case 1://UDP
-        ui->textEdit->setText(QString::fromStdString(stats.udp[i].toString()));
+        ui->textBrowser->setText(QString::fromStdString(stats.udp[i].toString()));
+        type="UDP";
+        index=i;
     break;
     case 2://DNS
-        ui->textEdit->setText(QString::fromStdString(stats.dns[i].toString()));
+        ui->textBrowser->setText(QString::fromStdString(stats.dns[i].toString()));
+        type="DNS";
+        index=i;
     break;
     case 3://HTTP
-        ui->textEdit->setText(QString::fromStdString(stats.http[i].toString()));
+        ui->textBrowser->setText(QString::fromStdString(stats.http[i].toString()));
+        type="HTTP";
+        index=i;
     break;
     case 4://SSL
-        ui->textEdit->setText(QString::fromStdString(stats.ssl[i].toString()));
+        ui->textBrowser->setText(QString::fromStdString(stats.ssl[i].toString()));
+        type="SSL";
+        index=i;
     break;
     }
 }
@@ -147,5 +157,41 @@ void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 
 void MainWindow::on_pushButton_3_clicked()
 {
+    pcpp::Packet* packet;
+    if(type=="TCP"){
+        packet = &stats.tcp[index];
+    }else if(type=="UDP"){
+        packet = &stats.udp[index];
+    }else if(type=="DNS"){
+        packet = &stats.dns[index];
+    }else if(type=="HTTP"){
+        packet = &stats.http[index];
+    }else if(type=="SSL"){
+        packet = &stats.ssl[index];
+    }else{
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("No packet selected!");
+        msgBox.exec();
+        return;
+    }
 
+    Dialog* dialog =  new Dialog();
+    dialog->setStuff(packet, dev);
+    dialog->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
+    dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+    dialog->show();
+
+    /*if (!dev->sendPacket(packet))
+    {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Could not send packet!");
+        msgBox.exec();
+    }else{
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Success");
+        msgBox.setText("Packet sent!");
+        msgBox.exec();
+    }*/
 }

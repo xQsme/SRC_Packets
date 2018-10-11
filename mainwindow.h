@@ -4,9 +4,10 @@
 #include <QMainWindow>
 #include <QListWidgetItem>
 #include <QMessageBox>
-#include <PcapLiveDeviceList.h>
 #include <QNetworkInterface>
+#include <PcapLiveDeviceList.h>
 #include <PlatformSpecificUtils.h>
+#include "dialog.h"
 
 struct PacketStats
 {
@@ -109,7 +110,9 @@ private:
     Ui::MainWindow *ui;
     static void onPacketArrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* dev, void* cookie);
     PacketStats stats;
-
+    pcpp::PcapLiveDevice* dev;
+    QString type;
+    int index;
 };
 
 #endif // MAINWINDOW_H
