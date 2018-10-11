@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QListWidgetItem>
+#include <QMessageBox>
 #include <PcapLiveDeviceList.h>
 #include <QNetworkInterface>
 #include <PlatformSpecificUtils.h>
@@ -96,6 +98,12 @@ private slots:
     void on_pushButton_clicked();
 
     void on_pushButton_2_clicked();
+
+    void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_comboBox_currentIndexChanged(const QString &arg1);
+
+    void on_pushButton_3_clicked();
 
 private:
     Ui::MainWindow *ui;
