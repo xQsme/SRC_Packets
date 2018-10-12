@@ -22,9 +22,10 @@ void MainWindow::on_pushButton_clicked()
 {
     ui->textBrowser_2->clear();
     std::string interfaceIPAddr;
-    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses())
+    {
         if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
-                 interfaceIPAddr =  address.toString().toUtf8().constData();
+                 interfaceIPAddr =  address.toString().toStdString();
     }
 
     // find the interface by IP address
@@ -37,12 +38,11 @@ void MainWindow::on_pushButton_clicked()
     if(!dev->open())
     {
         ui->textBrowser_2->append("Cannot open device");
-    }else{
-
+    }
+    else
+    {
         dev->startCapture(onPacketArrives, &stats);
-
         PCAP_SLEEP(ui->lineEdit->text().toInt());
-
         dev->stopCapture();
         ui->textBrowser_2->clear();
         ui->textBrowser_2->append(stats.returnCount());
@@ -51,102 +51,119 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::onPacketArrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* dev, void* cookie)
 {
-    // extract the stats object form the cookie
     PacketStats* stats = (PacketStats*)cookie;
-
-    // parsed the raw packet
     pcpp::Packet parsedPacket(packet);
-
-    // collect stats from packet
     stats->consumePacket(parsedPacket);
 }
 
 void MainWindow::on_pushButton_2_clicked()
 {
     ui->listWidget->clear();
-    switch(ui->comboBox->currentIndex()){
-    case 0://TCP
-        for(int i = 0; i < stats.tcp.length(); i++){
-            QString packet = QString::fromStdString(stats.tcp[i].toString());
-            if(packet.contains("IPv4")){
-                ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
-            }else{
-                ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
+    switch(ui->comboBox->currentIndex())
+    {
+        case 0://TCP
+            for(int i = 0; i < stats.tcp.length(); i++)
+            {
+                QString packet = QString::fromStdString(stats.tcp[i].toString());
+                if(packet.contains("IPv4"))
+                {
+                    ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
+                }
+                else
+                {
+                    ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
+                }
             }
-        }
-    break;
-    case 1://UDP
-        for(int i = 0; i < stats.udp.length(); i++){
-            QString packet = QString::fromStdString(stats.udp[i].toString());
-            if(packet.contains("IPv4")){
-                ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
-            }else{
-                ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
+        break;
+        case 1://UDP
+            for(int i = 0; i < stats.udp.length(); i++)
+            {
+                QString packet = QString::fromStdString(stats.udp[i].toString());
+                if(packet.contains("IPv4"))
+                {
+                    ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
+                }
+                else
+                {
+                    ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
+                }
             }
-        }
-    break;
-    case 2://DNS
-        for(int i = 0; i < stats.dns.length(); i++){
-            QString packet = QString::fromStdString(stats.dns[i].toString());
-            if(packet.contains("IPv4")){
-                ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
-            }else{
-                ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
+        break;
+        case 2://DNS
+            for(int i = 0; i < stats.dns.length(); i++)
+            {
+                QString packet = QString::fromStdString(stats.dns[i].toString());
+                if(packet.contains("IPv4"))
+                {
+                    ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
+                }
+                else
+                {
+                    ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
+                }
             }
-        }
-    break;
-    case 3://HTTP
-        for(int i = 0; i < stats.http.length(); i++){
-            QString packet = QString::fromStdString(stats.http[i].toString());
-            if(packet.contains("IPv4")){
-                ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
-            }else{
-                ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
+        break;
+        case 3://HTTP
+            for(int i = 0; i < stats.http.length(); i++)
+            {
+                QString packet = QString::fromStdString(stats.http[i].toString());
+                if(packet.contains("IPv4"))
+                {
+                    ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
+                }
+                else
+                {
+                    ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
+                }
             }
-        }
-    break;
-    case 4://SSL
-        for(int i = 0; i < stats.ssl.length(); i++){
-            QString packet = QString::fromStdString(stats.ssl[i].toString());
-            if(packet.contains("IPv4")){
-                ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
-            }else{
-                ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
+        break;
+        case 4://SSL
+            for(int i = 0; i < stats.ssl.length(); i++)
+            {
+                QString packet = QString::fromStdString(stats.ssl[i].toString());
+                if(packet.contains("IPv4"))
+                {
+                    ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
+                }
+                else
+                {
+                    ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
+                }
             }
-        }
-    break;
+        break;
     }
 }
 
 void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 {
     int i = ui->listWidget->currentRow();
-    switch(ui->comboBox->currentIndex()){
-    case 0://TCP
-        ui->textBrowser->setText(QString::fromStdString(stats.tcp[i].toString()));
-        type="TCP";
-        index=i;
-    break;
-    case 1://UDP
-        ui->textBrowser->setText(QString::fromStdString(stats.udp[i].toString()));
-        type="UDP";
-        index=i;
-    break;
-    case 2://DNS
-        ui->textBrowser->setText(QString::fromStdString(stats.dns[i].toString()));
-        type="DNS";
-        index=i;
-    break;
-    case 3://HTTP
-        ui->textBrowser->setText(QString::fromStdString(stats.http[i].toString()));
-        type="HTTP";
-        index=i;
-    break;
-    case 4://SSL
-        ui->textBrowser->setText(QString::fromStdString(stats.ssl[i].toString()));
-        type="SSL";
-        index=i;
-    break;
+    switch(ui->comboBox->currentIndex())
+    {
+        case 0://TCP
+            ui->textBrowser->setText(QString::fromStdString(stats.tcp[i].toString()));
+            type="TCP";
+            index=i;
+        break;
+        case 1://UDP
+            ui->textBrowser->setText(QString::fromStdString(stats.udp[i].toString()));
+            type="UDP";
+            index=i;
+        break;
+        case 2://DNS
+            ui->textBrowser->setText(QString::fromStdString(stats.dns[i].toString()));
+            type="DNS";
+            index=i;
+        break;
+        case 3://HTTP
+            ui->textBrowser->setText(QString::fromStdString(stats.http[i].toString()));
+            type="HTTP";
+            index=i;
+        break;
+        case 4://SSL
+            ui->textBrowser->setText(QString::fromStdString(stats.ssl[i].toString()));
+            type="SSL";
+            index=i;
+        break;
     }
 }
 
@@ -158,17 +175,28 @@ void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 void MainWindow::on_pushButton_3_clicked()
 {
     pcpp::Packet* packet;
-    if(type=="TCP"){
+    if(type=="TCP")
+    {
         packet = &stats.tcp[index];
-    }else if(type=="UDP"){
+    }
+    else if(type=="UDP")
+    {
         packet = &stats.udp[index];
-    }else if(type=="DNS"){
+    }
+    else if(type=="DNS")
+    {
         packet = &stats.dns[index];
-    }else if(type=="HTTP"){
+    }
+    else if(type=="HTTP")
+    {
         packet = &stats.http[index];
-    }else if(type=="SSL"){
+    }
+    else if(type=="SSL")
+    {
         packet = &stats.ssl[index];
-    }else{
+    }
+    else
+    {
         QMessageBox msgBox;
         msgBox.setWindowTitle("Error");
         msgBox.setText("No packet selected!");
@@ -181,17 +209,4 @@ void MainWindow::on_pushButton_3_clicked()
     dialog->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     dialog->setAttribute(Qt::WA_DeleteOnClose, true);
     dialog->show();
-
-    /*if (!dev->sendPacket(packet))
-    {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Error");
-        msgBox.setText("Could not send packet!");
-        msgBox.exec();
-    }else{
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Success");
-        msgBox.setText("Packet sent!");
-        msgBox.exec();
-    }*/
 }
