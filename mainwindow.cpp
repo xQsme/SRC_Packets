@@ -170,6 +170,8 @@ void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
 {
     ui->listWidget->clear();
+    ui->textBrowser->clear();
+    type="";
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -205,7 +207,7 @@ void MainWindow::on_pushButton_3_clicked()
     }
 
     Dialog* dialog =  new Dialog();
-    dialog->setStuff(packet, dev);
+    dialog->setStuff(packet, dev, type);
     dialog->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
     dialog->setAttribute(Qt::WA_DeleteOnClose, true);
     dialog->show();

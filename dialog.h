@@ -10,6 +10,7 @@
 #include "VlanLayer.h"
 #include "IPv4Layer.h"
 #include "TcpLayer.h"
+#include "UdpLayer.h"
 #include "HttpLayer.h"
 #include "UdpLayer.h"
 #include "DnsLayer.h"
@@ -25,17 +26,18 @@ class Dialog : public QDialog
 
 public:
     explicit Dialog(QWidget *parent = nullptr);
-    void setStuff(pcpp::Packet* packet, pcpp::PcapLiveDevice* dev);
+    void setStuff(pcpp::Packet* packet, pcpp::PcapLiveDevice* dev, QString type);
     ~Dialog();
 
 private slots:
-    void on_buttonBox_accepted();
 
     void on_lineEditPort_textChanged(const QString &arg1);
 
     void on_lineEditMac_textChanged(const QString &arg1);
 
     void on_lineEditIP_textChanged(const QString &arg1);
+
+    void on_pushButton_clicked();
 
 private:
     Ui::Dialog *ui;
@@ -44,8 +46,10 @@ private:
     pcpp::EthLayer* ethernetLayer;
     pcpp::IPv4Layer* ipLayer;
     pcpp::TcpLayer* tcpLayer;
+    pcpp::UdpLayer* udpLayer;
     std::string srcMAC;
     std::string srcIP;
+    QString type;
     bool set = false;
 };
 
