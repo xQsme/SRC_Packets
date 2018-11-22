@@ -227,6 +227,10 @@ void MainWindow::on_buttonEdit_clicked()
             udpLayer->getUdpHeader()->portDst = htons(ui->editPort->text().toInt());
         }
 
+        if(ui->checkTtl->isChecked()){
+            ipLayer->getIPv4Header()->timeToLive = ui->editTTL->text().toInt();
+        }
+
         packet.computeCalculateFields();
         writer.writePacket(*packet.getRawPacket());
     }
