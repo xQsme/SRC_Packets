@@ -1,11 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QIntValidator>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->editTTL->setText("12");
     foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces())
     {
         if (!(netInterface.flags() & QNetworkInterface::IsLoopBack))
@@ -112,18 +115,34 @@ void MainWindow::on_buttonEdit_clicked()
     foreach(pcpp::Packet packet, stats.tcp)
     {
         ethernetLayer = packet.getLayerOfType<pcpp::EthLayer>();
-        ethernetLayer->setDestMac(pcpp::MacAddress(ui->editMac->text().toStdString()));
+        if(ui->checkMac->isChecked()){
+            ethernetLayer->setDestMac(pcpp::MacAddress(ui->editMac->text().toStdString()));
+        }/*else{
+            ethernetLayer->setDestMac(pcpp::MacAddress(ethernetLayer->getSourceMac().toString()));
+        }*/
+
+
+
         ethernetLayer->setSourceMac(pcpp::MacAddress(srcMAC));
 
         ipLayer = packet.getLayerOfType<pcpp::IPv4Layer>();
-        ipLayer->setDstIpAddress(pcpp::IPv4Address(ui->editIp->text().toStdString()));
+
+        if(ui->checkIP->isChecked()){
+            ipLayer->setDstIpAddress(pcpp::IPv4Address(ui->editIp->text().toStdString()));
+        }
+
         ipLayer->setSrcIpAddress(pcpp::IPv4Address(srcIP));
         //ipLayer->getIPv4Header()->ipId = htons(4000);
-        //ipLayer->getIPv4Header()->timeToLive = 12;
+        ipLayer->getIPv4Header()->timeToLive = ui->editTTL->text().toInt();
 
         tcpLayer = packet.getLayerOfType<pcpp::TcpLayer>();
         tcpLayer->getTcpHeader()->portSrc = htons(1337);
-        tcpLayer->getTcpHeader()->portDst = htons(ui->editPort->text().toInt());
+
+        if(ui->checkPort->isChecked()){
+            tcpLayer->getTcpHeader()->portDst = htons(ui->editPort->text().toInt());
+        }
+        ui->editFlag->setValidator(new QIntValidator(0, 1, this));
+        //tcpLayer->getTcpHeader()->urgFlag = ui->editFlag->text().toInt();
         /*tcpLayer->getTcpHeader()->urgFlag = 1;
         uint16_t mssValue = htons(1460);
         tcpLayer->addTcpOptionAfter(pcpp::TCPOPT_MSS, PCPP_TCPOLEN_MSS, (uint8_t*)&mssValue, NULL);*/
@@ -133,16 +152,27 @@ void MainWindow::on_buttonEdit_clicked()
     foreach(pcpp::Packet packet, stats.udp)
     {
         ethernetLayer = packet.getLayerOfType<pcpp::EthLayer>();
-        ethernetLayer->setDestMac(pcpp::MacAddress(ui->editMac->text().toStdString()));
+
+        if(ui->checkMac->isChecked()){
+            ethernetLayer->setDestMac(pcpp::MacAddress(ui->editMac->text().toStdString()));
+        }
         ethernetLayer->setSourceMac(pcpp::MacAddress(srcMAC));
 
         ipLayer = packet.getLayerOfType<pcpp::IPv4Layer>();
-        ipLayer->setDstIpAddress(pcpp::IPv4Address(ui->editIp->text().toStdString()));
+
+        if(ui->checkIP->isChecked()){
+            ipLayer->setDstIpAddress(pcpp::IPv4Address(ui->editIp->text().toStdString()));
+        }
+
         ipLayer->setSrcIpAddress(pcpp::IPv4Address(srcIP));
 
         udpLayer = packet.getLayerOfType<pcpp::UdpLayer>();
         udpLayer->getUdpHeader()->portSrc = htons(1337);
-        udpLayer->getUdpHeader()->portDst = htons(ui->editPort->text().toInt());
+
+        if(ui->checkPort->isChecked()){
+            udpLayer->getUdpHeader()->portDst = htons(ui->editPort->text().toInt());
+        }
+
         packet.computeCalculateFields();
         writer.writePacket(*packet.getRawPacket());
     }
