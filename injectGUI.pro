@@ -26,16 +26,13 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    dialog.cpp
+        mainwindow.cpp
 
 HEADERS += \
-        mainwindow.h \
-    dialog.h
+        mainwindow.h
 
 FORMS += \
-        mainwindow.ui \
-    dialog.ui
+        mainwindow.ui
 
 INCLUDEPATH += /usr/local/include/pcapplusplus
 LIBS+= -lPcap++ -lPacket++ -lCommon++

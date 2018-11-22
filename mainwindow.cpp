@@ -6,11 +6,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->comboBox->addItem("TCP");
-    ui->comboBox->addItem("UDP");
-    ui->comboBox->addItem("DNS");
-    ui->comboBox->addItem("HTTP");
-    ui->comboBox->addItem("SSL");
+    foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces())
+    {
+        if (!(netInterface.flags() & QNetworkInterface::IsLoopBack))
+        {
+            ui->editMac->setText(netInterface.hardwareAddress());
+            break;
+        }
+    }
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses())
+    {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+        {
+            ui->editIp->setText(address.toString());
+            break;
+        }
+    }
 }
 
 MainWindow::~MainWindow()
@@ -18,9 +29,14 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_buttonOutput_clicked()
 {
-    ui->textBrowser_2->clear();
+    output = QFileDialog::getOpenFileName(this, tr("Open File"));
+}
+
+void MainWindow::on_buttonCapture_clicked()
+{
+    ui->textBrowser->clear();
     std::string interfaceIPAddr;
     foreach (const QHostAddress &address, QNetworkInterface::allAddresses())
     {
@@ -32,20 +48,25 @@ void MainWindow::on_pushButton_clicked()
     dev = pcpp::PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(interfaceIPAddr.c_str());
     if (dev == NULL)
     {
-        ui->textBrowser_2->append("Cannot find interface with IPv4 address of '" + QString(interfaceIPAddr.c_str()) + "'");
+        ui->textBrowser->append("Cannot find interface with IPv4 address of '" + QString(interfaceIPAddr.c_str()) + "'");
         return;
     }
     if(!dev->open())
     {
-        ui->textBrowser_2->append("Cannot open device");
+        ui->textBrowser->append("Cannot open device");
     }
     else
     {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Processing");
+        msgBox.setText("Please Wait");
+        msgBox.show();
         dev->startCapture(onPacketArrives, &stats);
         PCAP_SLEEP(ui->lineEdit->text().toInt());
+        msgBox.hide();
         dev->stopCapture();
-        ui->textBrowser_2->clear();
-        ui->textBrowser_2->append(stats.returnCount());
+        ui->textBrowser->clear();
+        ui->textBrowser->append(stats.returnCount());
     }
 }
 
@@ -56,159 +77,77 @@ void MainWindow::onPacketArrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* 
     stats->consumePacket(parsedPacket);
 }
 
-void MainWindow::on_pushButton_2_clicked()
+void MainWindow::on_buttonEdit_clicked()
 {
-    ui->listWidget->clear();
-    switch(ui->comboBox->currentIndex())
-    {
-        case 0://TCP
-            for(int i = 0; i < stats.tcp.length(); i++)
-            {
-                QString packet = QString::fromStdString(stats.tcp[i].toString());
-                if(packet.contains("IPv4"))
-                {
-                    ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
-                }
-                else
-                {
-                    ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
-                }
-            }
-        break;
-        case 1://UDP
-            for(int i = 0; i < stats.udp.length(); i++)
-            {
-                QString packet = QString::fromStdString(stats.udp[i].toString());
-                if(packet.contains("IPv4"))
-                {
-                    ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
-                }
-                else
-                {
-                    ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
-                }
-            }
-        break;
-        case 2://DNS
-            for(int i = 0; i < stats.dns.length(); i++)
-            {
-                QString packet = QString::fromStdString(stats.dns[i].toString());
-                if(packet.contains("IPv4"))
-                {
-                    ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
-                }
-                else
-                {
-                    ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
-                }
-            }
-        break;
-        case 3://HTTP
-            for(int i = 0; i < stats.http.length(); i++)
-            {
-                QString packet = QString::fromStdString(stats.http[i].toString());
-                if(packet.contains("IPv4"))
-                {
-                    ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
-                }
-                else
-                {
-                    ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
-                }
-            }
-        break;
-        case 4://SSL
-            for(int i = 0; i < stats.ssl.length(); i++)
-            {
-                QString packet = QString::fromStdString(stats.ssl[i].toString());
-                if(packet.contains("IPv4"))
-                {
-                    ui->listWidget->addItem(packet.split("IPv4 Layer, ")[1].split("\n")[0]);
-                }
-                else
-                {
-                    ui->listWidget->addItem(packet.split("IPv6 Layer, ")[1].split("\n")[0]);
-                }
-            }
-        break;
-    }
-}
-
-void MainWindow::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
-{
-    int i = ui->listWidget->currentRow();
-    switch(ui->comboBox->currentIndex())
-    {
-        case 0://TCP
-            ui->textBrowser->setText(QString::fromStdString(stats.tcp[i].toString()));
-            type="TCP";
-            index=i;
-        break;
-        case 1://UDP
-            ui->textBrowser->setText(QString::fromStdString(stats.udp[i].toString()));
-            type="UDP";
-            index=i;
-        break;
-        case 2://DNS
-            ui->textBrowser->setText(QString::fromStdString(stats.dns[i].toString()));
-            type="DNS";
-            index=i;
-        break;
-        case 3://HTTP
-            ui->textBrowser->setText(QString::fromStdString(stats.http[i].toString()));
-            type="HTTP";
-            index=i;
-        break;
-        case 4://SSL
-            ui->textBrowser->setText(QString::fromStdString(stats.ssl[i].toString()));
-            type="SSL";
-            index=i;
-        break;
-    }
-}
-
-void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
-{
-    ui->listWidget->clear();
-    ui->textBrowser->clear();
-    type="";
-}
-
-void MainWindow::on_pushButton_3_clicked()
-{
-    pcpp::Packet* packet;
-    if(type=="TCP")
-    {
-        packet = &stats.tcp[index];
-    }
-    else if(type=="UDP")
-    {
-        packet = &stats.udp[index];
-    }
-    else if(type=="DNS")
-    {
-        packet = &stats.dns[index];
-    }
-    else if(type=="HTTP")
-    {
-        packet = &stats.http[index];
-    }
-    else if(type=="SSL")
-    {
-        packet = &stats.ssl[index];
-    }
-    else
-    {
+    pcpp::EthLayer* ethernetLayer;
+    pcpp::IPv4Layer* ipLayer;
+    pcpp::TcpLayer* tcpLayer;
+    pcpp::UdpLayer* udpLayer;
+    std::string srcMAC;
+    std::string srcIP;
+    pcpp::PcapFileWriterDevice writer(output.toLocal8Bit().data(), pcpp::LINKTYPE_ETHERNET);
+    if(!writer.open()){
         QMessageBox msgBox;
         msgBox.setWindowTitle("Error");
-        msgBox.setText("No packet selected!");
+        msgBox.setText("Could not open file to write!");
         msgBox.exec();
         return;
     }
+    foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces())
+    {
+        if (!(netInterface.flags() & QNetworkInterface::IsLoopBack))
+        {
+            srcMAC = netInterface.hardwareAddress().toStdString();
+            break;
+        }
+    }
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses())
+    {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+        {
+            srcIP = address.toString().toStdString();
+            break;
+        }
+    }
+    foreach(pcpp::Packet packet, stats.tcp)
+    {
+        ethernetLayer = packet.getLayerOfType<pcpp::EthLayer>();
+        ethernetLayer->setDestMac(pcpp::MacAddress(ui->editMac->text().toStdString()));
+        ethernetLayer->setSourceMac(pcpp::MacAddress(srcMAC));
 
-    Dialog* dialog =  new Dialog();
-    dialog->setStuff(packet, dev, type);
-    dialog->setWindowFlags(windowFlags() | Qt::WindowMinimizeButtonHint);
-    dialog->setAttribute(Qt::WA_DeleteOnClose, true);
-    dialog->show();
+        ipLayer = packet.getLayerOfType<pcpp::IPv4Layer>();
+        ipLayer->setDstIpAddress(pcpp::IPv4Address(ui->editIp->text().toStdString()));
+        ipLayer->setSrcIpAddress(pcpp::IPv4Address(srcIP));
+        //ipLayer->getIPv4Header()->ipId = htons(4000);
+        //ipLayer->getIPv4Header()->timeToLive = 12;
+
+        tcpLayer = packet.getLayerOfType<pcpp::TcpLayer>();
+        tcpLayer->getTcpHeader()->portSrc = htons(1337);
+        tcpLayer->getTcpHeader()->portDst = htons(ui->editPort->text().toInt());
+        /*tcpLayer->getTcpHeader()->urgFlag = 1;
+        uint16_t mssValue = htons(1460);
+        tcpLayer->addTcpOptionAfter(pcpp::TCPOPT_MSS, PCPP_TCPOLEN_MSS, (uint8_t*)&mssValue, NULL);*/
+        packet.computeCalculateFields();
+        writer.writePacket(*packet.getRawPacket());
+    }
+    foreach(pcpp::Packet packet, stats.udp)
+    {
+        ethernetLayer = packet.getLayerOfType<pcpp::EthLayer>();
+        ethernetLayer->setDestMac(pcpp::MacAddress(ui->editMac->text().toStdString()));
+        ethernetLayer->setSourceMac(pcpp::MacAddress(srcMAC));
+
+        ipLayer = packet.getLayerOfType<pcpp::IPv4Layer>();
+        ipLayer->setDstIpAddress(pcpp::IPv4Address(ui->editIp->text().toStdString()));
+        ipLayer->setSrcIpAddress(pcpp::IPv4Address(srcIP));
+
+        udpLayer = packet.getLayerOfType<pcpp::UdpLayer>();
+        udpLayer->getUdpHeader()->portSrc = htons(1337);
+        udpLayer->getUdpHeader()->portDst = htons(ui->editPort->text().toInt());
+        packet.computeCalculateFields();
+        writer.writePacket(*packet.getRawPacket());
+    }
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Success");
+    msgBox.setText("All packets saved!");
+    msgBox.exec();
 }
