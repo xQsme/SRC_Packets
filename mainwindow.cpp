@@ -98,6 +98,52 @@ void MainWindow::on_buttonEdit_clicked()
         msgBox.exec();
         return;
     }
+
+
+    //validaçao ttl
+    ui->editTTL->setValidator(new QIntValidator(0, 255, this));
+
+    QString str;
+    int pos = 0;
+    QIntValidator v(0, 255, this);
+
+    str = ui->editTTL->text();
+    QValidator::State estado = v.validate(str, pos);
+
+    if(estado == QValidator::Invalid){
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Enter a integer between 0 and 1");
+        msgBox.exec();
+        return;
+    }
+
+    //validaçao ip
+    QHostAddress addr;
+    if (!addr.setAddress(ui->editIp->text())) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Invalid ip");
+        msgBox.exec();
+        return;
+    }
+
+    //validaçao mac
+    QRegExp mailREX("[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}");
+
+    /*mailREX.setCaseSensitivity(Qt::CaseInsensitive);
+    mailREX.setPatternSyntax(QRegExp::Wildcard);*/
+
+    bool reg = mailREX.exactMatch(ui->editMac->text());
+
+    if(!reg){
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Invalid Mac");
+        msgBox.exec();
+        return;
+    }
+
     foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces())
     {
         if (!(netInterface.flags() & QNetworkInterface::IsLoopBack))
@@ -135,24 +181,11 @@ void MainWindow::on_buttonEdit_clicked()
 
         ipLayer->setSrcIpAddress(pcpp::IPv4Address(srcIP));
         //ipLayer->getIPv4Header()->ipId = htons(4000);
-        ui->editTTL->setValidator(new QIntValidator(0, 255, this));
 
-        QString str;
-        int pos = 0;
-        QIntValidator v(0, 255, this);
-
-        str = ui->editTTL->text();
-        QValidator::State estado = v.validate(str, pos);
-
-        if(estado == QValidator::Invalid){
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("Error");
-            msgBox.setText("Enter a integer between 0 and 1");
-            msgBox.exec();
-            return;
+        if(ui->checkTtl->isChecked()){
+            ipLayer->getIPv4Header()->timeToLive = ui->editTTL->text().toInt();
         }
 
-        ipLayer->getIPv4Header()->timeToLive = ui->editTTL->text().toInt();
 
         tcpLayer = packet.getLayerOfType<pcpp::TcpLayer>();
         tcpLayer->getTcpHeader()->portSrc = htons(1337);
@@ -161,7 +194,9 @@ void MainWindow::on_buttonEdit_clicked()
             tcpLayer->getTcpHeader()->portDst = htons(ui->editPort->text().toInt());
         }
 
-        tcpLayer->getTcpHeader()->urgFlag = ui->comboFlag->currentText().toInt();
+        if(ui->checkFlag->isChecked()){
+            tcpLayer->getTcpHeader()->urgFlag = ui->comboFlag->currentText().toInt();
+        }
 
         /*uint16_t mssValue = htons(1460);
         tcpLayer->addTcpOptionAfter(pcpp::TCPOPT_MSS, PCPP_TCPOLEN_MSS, (uint8_t*)&mssValue, NULL);*/
