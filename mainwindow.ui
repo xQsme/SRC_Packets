@@ -162,12 +162,16 @@
         <item>
          <widget class="QLabel" name="label_5">
           <property name="text">
-           <string>Time to live</string>
+           <string>Time to Live</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="editTTL"/>
+         <widget class="QLineEdit" name="editTTL">
+          <property name="text">
+           <string>12</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -175,6 +179,12 @@
        <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
          <widget class="QCheckBox" name="checkFlag">
+          <property name="maximumSize">
+           <size>
+            <width>30</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -186,12 +196,16 @@
         <item>
          <widget class="QLabel" name="label_6">
           <property name="text">
-           <string>Flag urgent</string>
+           <string>Flag Urgent</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="comboFlag"/>
+         <widget class="QComboBox" name="comboFlag">
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -214,6 +228,49 @@
          <widget class="QPushButton" name="buttonOutput">
           <property name="text">
            <string>Output File</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkTCP">
+          <property name="text">
+           <string>TCP</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkUDP">
+          <property name="text">
+           <string>UDP</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

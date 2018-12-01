@@ -11,6 +11,8 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -28,9 +30,9 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralWidget;
-    QHBoxLayout *horizontalLayout_6;
+    QHBoxLayout *horizontalLayout_8;
     QVBoxLayout *verticalLayout;
-    QHBoxLayout *horizontalLayout;
+    QHBoxLayout *horizontalLayout_7;
     QSpacerItem *horizontalSpacer_2;
     QLabel *label;
     QLineEdit *lineEdit;
@@ -38,17 +40,32 @@ public:
     QSpacerItem *horizontalSpacer_5;
     QTextBrowser *textBrowser;
     QHBoxLayout *horizontalLayout_4;
+    QCheckBox *checkIP;
     QLabel *label_2;
     QLineEdit *editIp;
     QHBoxLayout *horizontalLayout_3;
+    QCheckBox *checkMac;
     QLabel *label_3;
     QLineEdit *editMac;
     QHBoxLayout *horizontalLayout_2;
+    QCheckBox *checkPort;
     QLabel *label_4;
     QLineEdit *editPort;
+    QHBoxLayout *horizontalLayout;
+    QCheckBox *checkTtl;
+    QLabel *label_5;
+    QLineEdit *editTTL;
+    QHBoxLayout *horizontalLayout_6;
+    QCheckBox *checkFlag;
+    QLabel *label_6;
+    QComboBox *comboFlag;
     QHBoxLayout *horizontalLayout_5;
     QSpacerItem *horizontalSpacer_4;
     QPushButton *buttonOutput;
+    QSpacerItem *horizontalSpacer_6;
+    QCheckBox *checkTCP;
+    QSpacerItem *horizontalSpacer_7;
+    QCheckBox *checkUDP;
     QSpacerItem *horizontalSpacer;
     QPushButton *buttonEdit;
     QSpacerItem *horizontalSpacer_3;
@@ -58,44 +75,44 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(960, 1060);
+        MainWindow->resize(800, 600);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
-        horizontalLayout_6 = new QHBoxLayout(centralWidget);
-        horizontalLayout_6->setSpacing(6);
-        horizontalLayout_6->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
+        horizontalLayout_8 = new QHBoxLayout(centralWidget);
+        horizontalLayout_8->setSpacing(6);
+        horizontalLayout_8->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_8->setObjectName(QStringLiteral("horizontalLayout_8"));
         verticalLayout = new QVBoxLayout();
         verticalLayout->setSpacing(6);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-        horizontalLayout = new QHBoxLayout();
-        horizontalLayout->setSpacing(6);
-        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalLayout_7 = new QHBoxLayout();
+        horizontalLayout_7->setSpacing(6);
+        horizontalLayout_7->setObjectName(QStringLiteral("horizontalLayout_7"));
+        horizontalSpacer_2 = new QSpacerItem(288, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        horizontalLayout->addItem(horizontalSpacer_2);
+        horizontalLayout_7->addItem(horizontalSpacer_2);
 
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
 
-        horizontalLayout->addWidget(label);
+        horizontalLayout_7->addWidget(label);
 
         lineEdit = new QLineEdit(centralWidget);
         lineEdit->setObjectName(QStringLiteral("lineEdit"));
 
-        horizontalLayout->addWidget(lineEdit);
+        horizontalLayout_7->addWidget(lineEdit);
 
         buttonCapture = new QPushButton(centralWidget);
         buttonCapture->setObjectName(QStringLiteral("buttonCapture"));
 
-        horizontalLayout->addWidget(buttonCapture);
+        horizontalLayout_7->addWidget(buttonCapture);
 
-        horizontalSpacer_5 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer_5 = new QSpacerItem(287, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-        horizontalLayout->addItem(horizontalSpacer_5);
+        horizontalLayout_7->addItem(horizontalSpacer_5);
 
 
-        verticalLayout->addLayout(horizontalLayout);
+        verticalLayout->addLayout(horizontalLayout_7);
 
         textBrowser = new QTextBrowser(centralWidget);
         textBrowser->setObjectName(QStringLiteral("textBrowser"));
@@ -105,6 +122,12 @@ public:
         horizontalLayout_4 = new QHBoxLayout();
         horizontalLayout_4->setSpacing(6);
         horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        checkIP = new QCheckBox(centralWidget);
+        checkIP->setObjectName(QStringLiteral("checkIP"));
+        checkIP->setChecked(true);
+
+        horizontalLayout_4->addWidget(checkIP);
+
         label_2 = new QLabel(centralWidget);
         label_2->setObjectName(QStringLiteral("label_2"));
 
@@ -121,6 +144,12 @@ public:
         horizontalLayout_3 = new QHBoxLayout();
         horizontalLayout_3->setSpacing(6);
         horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        checkMac = new QCheckBox(centralWidget);
+        checkMac->setObjectName(QStringLiteral("checkMac"));
+        checkMac->setChecked(true);
+
+        horizontalLayout_3->addWidget(checkMac);
+
         label_3 = new QLabel(centralWidget);
         label_3->setObjectName(QStringLiteral("label_3"));
 
@@ -137,6 +166,12 @@ public:
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setSpacing(6);
         horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        checkPort = new QCheckBox(centralWidget);
+        checkPort->setObjectName(QStringLiteral("checkPort"));
+        checkPort->setChecked(true);
+
+        horizontalLayout_2->addWidget(checkPort);
+
         label_4 = new QLabel(centralWidget);
         label_4->setObjectName(QStringLiteral("label_4"));
 
@@ -150,6 +185,52 @@ public:
 
         verticalLayout->addLayout(horizontalLayout_2);
 
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        checkTtl = new QCheckBox(centralWidget);
+        checkTtl->setObjectName(QStringLiteral("checkTtl"));
+        checkTtl->setChecked(true);
+
+        horizontalLayout->addWidget(checkTtl);
+
+        label_5 = new QLabel(centralWidget);
+        label_5->setObjectName(QStringLiteral("label_5"));
+
+        horizontalLayout->addWidget(label_5);
+
+        editTTL = new QLineEdit(centralWidget);
+        editTTL->setObjectName(QStringLiteral("editTTL"));
+
+        horizontalLayout->addWidget(editTTL);
+
+
+        verticalLayout->addLayout(horizontalLayout);
+
+        horizontalLayout_6 = new QHBoxLayout();
+        horizontalLayout_6->setSpacing(6);
+        horizontalLayout_6->setObjectName(QStringLiteral("horizontalLayout_6"));
+        checkFlag = new QCheckBox(centralWidget);
+        checkFlag->setObjectName(QStringLiteral("checkFlag"));
+        checkFlag->setMaximumSize(QSize(30, 16777215));
+        checkFlag->setChecked(true);
+
+        horizontalLayout_6->addWidget(checkFlag);
+
+        label_6 = new QLabel(centralWidget);
+        label_6->setObjectName(QStringLiteral("label_6"));
+
+        horizontalLayout_6->addWidget(label_6);
+
+        comboFlag = new QComboBox(centralWidget);
+        comboFlag->setObjectName(QStringLiteral("comboFlag"));
+        comboFlag->setSizeAdjustPolicy(QComboBox::AdjustToContentsOnFirstShow);
+
+        horizontalLayout_6->addWidget(comboFlag);
+
+
+        verticalLayout->addLayout(horizontalLayout_6);
+
         horizontalLayout_5 = new QHBoxLayout();
         horizontalLayout_5->setSpacing(6);
         horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
@@ -161,6 +242,25 @@ public:
         buttonOutput->setObjectName(QStringLiteral("buttonOutput"));
 
         horizontalLayout_5->addWidget(buttonOutput);
+
+        horizontalSpacer_6 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_5->addItem(horizontalSpacer_6);
+
+        checkTCP = new QCheckBox(centralWidget);
+        checkTCP->setObjectName(QStringLiteral("checkTCP"));
+
+        horizontalLayout_5->addWidget(checkTCP);
+
+        horizontalSpacer_7 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_5->addItem(horizontalSpacer_7);
+
+        checkUDP = new QCheckBox(centralWidget);
+        checkUDP->setObjectName(QStringLiteral("checkUDP"));
+        checkUDP->setChecked(true);
+
+        horizontalLayout_5->addWidget(checkUDP);
 
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -179,7 +279,7 @@ public:
         verticalLayout->addLayout(horizontalLayout_5);
 
 
-        horizontalLayout_6->addLayout(verticalLayout);
+        horizontalLayout_8->addLayout(verticalLayout);
 
         MainWindow->setCentralWidget(centralWidget);
         statusBar = new QStatusBar(MainWindow);
@@ -197,11 +297,21 @@ public:
         label->setText(QApplication::translate("MainWindow", "Duration", nullptr));
         lineEdit->setText(QApplication::translate("MainWindow", "5", nullptr));
         buttonCapture->setText(QApplication::translate("MainWindow", "Capture", nullptr));
+        checkIP->setText(QString());
         label_2->setText(QApplication::translate("MainWindow", "Destination IP", nullptr));
+        checkMac->setText(QString());
         label_3->setText(QApplication::translate("MainWindow", "Destination Mac Adress", nullptr));
+        checkPort->setText(QString());
         label_4->setText(QApplication::translate("MainWindow", "Destination Port", nullptr));
         editPort->setText(QApplication::translate("MainWindow", "80", nullptr));
+        checkTtl->setText(QString());
+        label_5->setText(QApplication::translate("MainWindow", "Time to Live", nullptr));
+        editTTL->setText(QApplication::translate("MainWindow", "12", nullptr));
+        checkFlag->setText(QString());
+        label_6->setText(QApplication::translate("MainWindow", "Flag Urgent", nullptr));
         buttonOutput->setText(QApplication::translate("MainWindow", "Output File", nullptr));
+        checkTCP->setText(QApplication::translate("MainWindow", "TCP", nullptr));
+        checkUDP->setText(QApplication::translate("MainWindow", "UDP", nullptr));
         buttonEdit->setText(QApplication::translate("MainWindow", "Edit and Save", nullptr));
     } // retranslateUi
 
