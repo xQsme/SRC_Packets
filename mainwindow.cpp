@@ -27,6 +27,17 @@ MainWindow::MainWindow(QWidget *parent) :
             break;
         }
     }
+    foreach(QNetworkInterface inter, QNetworkInterface::allInterfaces()){
+        QString msg = inter.humanReadableName();
+        QList<QNetworkAddressEntry> address= inter.addressEntries();
+
+        foreach (const QNetworkAddressEntry &add, address){
+            if (add.ip().protocol() == QAbstractSocket::IPv4Protocol){
+                msg.append(" - "+add.ip().toString());
+                ui->comboBoxInterface->addItem(msg);
+            }
+        }
+    }
 }
 
 MainWindow::~MainWindow()
@@ -42,22 +53,24 @@ void MainWindow::on_buttonOutput_clicked()
 void MainWindow::on_buttonCapture_clicked()
 {
     ui->textBrowser->clear();
-    std::string interfaceIPAddr;
-    foreach (const QHostAddress &address, QNetworkInterface::allAddresses())
-    {
-        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
-                 interfaceIPAddr =  address.toString().toStdString();
-    }
+    std::string interfaceIPAddr = ui->comboBoxInterface->currentText().split("- ")[1].toStdString();
     // find the interface by IP address
     dev = pcpp::PcapLiveDeviceList::getInstance().getPcapLiveDeviceByIp(interfaceIPAddr.c_str());
     if (dev == NULL)
     {
-        ui->textBrowser->append("Cannot find interface with IPv4 address of '" + QString(interfaceIPAddr.c_str()) + "'");
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Cannot find interface");
+        msgBox.exec();
         return;
     }
     if(!dev->open())
     {
-        ui->textBrowser->append("Cannot open device");
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Error");
+        msgBox.setText("Cannot open device,  please run with elevated privileges");
+        msgBox.exec();
+        return;
     }
     else
     {
@@ -214,4 +227,9 @@ void MainWindow::on_buttonEdit_clicked()
     msgBox.setWindowTitle("Success");
     msgBox.setText(QString::number(total) + " packets saved!");
     msgBox.exec();
+}
+
+void MainWindow::on_comboBoxInterface_currentTextChanged(const QString &arg1)
+{
+    ui->editIp->setText(arg1.split("- ")[1]);
 }

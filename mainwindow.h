@@ -61,6 +61,8 @@ private slots:
 
     void on_buttonEdit_clicked();
 
+    void on_comboBoxInterface_currentTextChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     static void onPacketArrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* dev, void* cookie);
