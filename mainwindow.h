@@ -34,7 +34,7 @@ struct PacketStats
 
     QString returnCount()
     {
-        return ("Captured Packets:\nTCP packet count:\t" + QString::number(tcp.length()) +
+        return ("Packets:\nTCP packet count:\t" + QString::number(tcp.length()) +
         "\nUDP packet count:\t" + QString::number(udp.length()));
     }
 };
@@ -62,6 +62,10 @@ private slots:
     void on_buttonEdit_clicked();
 
     void on_comboBoxInterface_currentTextChanged(const QString &arg1);
+
+    void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;

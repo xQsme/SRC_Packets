@@ -96,12 +96,6 @@ void MainWindow::onPacketArrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* 
 
 void MainWindow::on_buttonEdit_clicked()
 {
-    pcpp::EthLayer* ethernetLayer;
-    pcpp::IPv4Layer* ipLayer;
-    pcpp::TcpLayer* tcpLayer;
-    pcpp::UdpLayer* udpLayer;
-    std::string srcMAC;
-    std::string srcIP;
     pcpp::PcapFileWriterDevice writer(output.toLocal8Bit().data(), pcpp::LINKTYPE_ETHERNET);
     if(!writer.open()){
         QMessageBox msgBox;
@@ -141,6 +135,12 @@ void MainWindow::on_buttonEdit_clicked()
         msgBox.exec();
         return;
     }
+    pcpp::EthLayer* ethernetLayer;
+    pcpp::IPv4Layer* ipLayer;
+    pcpp::TcpLayer* tcpLayer;
+    pcpp::UdpLayer* udpLayer;
+    std::string srcMAC;
+    std::string srcIP;
     foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces())
     {
         if (!(netInterface.flags() & QNetworkInterface::IsLoopBack))
@@ -160,7 +160,6 @@ void MainWindow::on_buttonEdit_clicked()
     int total = 0;
     if(ui->checkTCP->checkState())
     {
-        total += stats.tcp.length();
         foreach(pcpp::Packet packet, stats.tcp)
         {
             ethernetLayer = packet.getLayerOfType<pcpp::EthLayer>();
@@ -189,12 +188,14 @@ void MainWindow::on_buttonEdit_clicked()
             /*uint16_t mssValue = htons(1460);
             tcpLayer->addTcpOptionAfter(pcpp::TCPOPT_MSS, PCPP_TCPOLEN_MSS, (uint8_t*)&mssValue, NULL);*/
             packet.computeCalculateFields();
-            writer.writePacket(*packet.getRawPacket());
+            if(writer.writePacket(*packet.getRawPacket()))
+            {
+                total ++;
+            }
         }
     }
     if(ui->checkUDP->checkState())
     {
-        total += stats.udp.length();
         foreach(pcpp::Packet packet, stats.udp)
         {
             ethernetLayer = packet.getLayerOfType<pcpp::EthLayer>();
@@ -220,9 +221,13 @@ void MainWindow::on_buttonEdit_clicked()
                 udpLayer->getUdpHeader()->portDst = htons(ui->editPort->text().toInt());
             }
             packet.computeCalculateFields();
-            writer.writePacket(*packet.getRawPacket());
+            if(writer.writePacket(*packet.getRawPacket()))
+            {
+                total++;
+            }
         }
     }
+    writer.close();
     QMessageBox msgBox;
     msgBox.setWindowTitle("Success");
     msgBox.setText(QString::number(total) + " packets saved!");
@@ -232,4 +237,49 @@ void MainWindow::on_buttonEdit_clicked()
 void MainWindow::on_comboBoxInterface_currentTextChanged(const QString &arg1)
 {
     ui->editIp->setText(arg1.split("- ")[1]);
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    std::string srcMAC;
+    std::string srcIP;
+    foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces())
+    {
+        if (!(netInterface.flags() & QNetworkInterface::IsLoopBack))
+        {
+            srcMAC = netInterface.hardwareAddress().toStdString();
+            break;
+        }
+    }
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses())
+    {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+        {
+            srcIP = address.toString().toStdString();
+            break;
+        }
+    }
+    pcpp::EthLayer newEthernetLayer(pcpp::MacAddress(srcMAC), pcpp::MacAddress(ui->editMac->text().toStdString()));
+    pcpp::IPv4Layer newIPLayer(pcpp::IPv4Address(srcIP), pcpp::IPv4Address(ui->editIp->text().toStdString()));
+    newIPLayer.getIPv4Header()->ipId = htons(2000);
+    if(ui->checkTtl->isChecked()){
+        newIPLayer.getIPv4Header()->timeToLive = ui->editTTL->text().toInt();
+    }
+    pcpp::Packet newPacket(100);
+    pcpp::UdpLayer newUdpLayer(1337, ui->editPort->text().toInt());
+    newPacket.addLayer(&newEthernetLayer);
+    newPacket.addLayer(&newIPLayer);
+    newPacket.addLayer(&newUdpLayer);
+    newPacket.computeCalculateFields();
+    stats.consumePacket(newPacket);
+    ui->textBrowser->clear();
+    ui->textBrowser->append(stats.returnCount());
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    stats.tcp.clear();
+    stats.udp.clear();
+    ui->textBrowser->clear();
+    ui->textBrowser->append("Packets cleared");
 }
