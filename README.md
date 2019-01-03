@@ -1,2 +1,3 @@
 # SRC_Packets
-Qt PcapPlusPlus send custom packets
+Using PcapPlusPlus
+Simple GUI app to capture, edit, craft and save network packets.
